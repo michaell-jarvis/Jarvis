@@ -14,11 +14,28 @@ MESI = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio",
 GIORNI_BREVI = ["L", "M", "M", "G", "V", "S", "D"]  # lunedì = 0
 NOMI_GIORNI_JS = ["dom", "lun", "mar", "mer", "gio", "ven", "sab"]  # come nell'artefatto: domenica = 0
 TUTTI = [0, 1, 2, 3, 4, 5, 6]
-VOTO_MAX = 6
+VOTO_MAX = 5  # dalla versione 5 dell'habit tracker il voto va da 0 a 5
 
 
 def vuoto():
-    return {"version": 3, "scoreLabel": "Voto alla giornata", "months": {}}
+    return {"version": 5, "scoreLabel": "Voto alla giornata", "mantraList": [], "mantraEvery": "week",
+            "mantraPick": {}, "months": {}}
+
+
+def mantra_attuale(stato, giorno):
+    """Stessa regola dell'habit tracker: mantra scelto per la settimana/mese, altrimenti a rotazione dalla lista."""
+    lista = stato.get("mantraList") or []
+    scelti = stato.get("mantraPick") or {}
+    lunedi = giorno - datetime.timedelta(days=giorno.weekday())
+    if stato.get("mantraEvery") == "month":
+        chiave, indice = "m" + chiave_mese(giorno), giorno.year * 12 + giorno.month - 1
+    else:
+        chiave, indice = "w" + lunedi.isoformat(), round((lunedi - datetime.date(1970, 1, 1)).days / 7)
+    if isinstance(scelti.get(chiave), str):
+        return scelti[chiave]
+    if lista:
+        return lista[indice % len(lista)]
+    return mese(stato, chiave_mese(giorno)).get("mantra", "")
 
 
 def giorno_js(data):
@@ -77,7 +94,7 @@ def mese(stato, chiave):
     fonte = _normalizza(mesi[precedenti[-1]]) if precedenti else (_normalizza(mesi[sorted(mesi)[0]]) if mesi else None)
     nuovo = {
         "mantra": fonte["mantra"] if fonte else "",
-        "habits": [{"id": h["id"], "name": h["name"], "days": list(h.get("days") or TUTTI)} for h in fonte["habits"]] if fonte else [],
+        "habits": [{"id": h["id"], "name": h["name"], "days": list(h.get("days") or TUTTI), **({"color": h["color"]} if "color" in h else {})} for h in fonte["habits"]] if fonte else [],
         "marks": {}, "score": {}, "good": {},
         "goals": [{"id": g["id"], "text": g["text"], "done": False} for g in fonte["goals"] if not g.get("done")] if fonte else [],
     }
@@ -212,8 +229,9 @@ def riepilogo_testo(stato, oggi, chiave=None):
     M = mese(stato, chiave)
     S = statistiche(stato, chiave, oggi)
     righe = [f"Habit tracker – {nome_mese(chiave)} (giorni contati: {S['fino_a']} su {S['giorni_mese']})"]
-    if M["mantra"]:
-        righe.append(f"Mantra: {M['mantra']}")
+    mantra = mantra_attuale(stato, oggi)
+    if mantra:
+        righe.append(f"Mantra attuale: {mantra}")
     if not M["habits"]:
         righe.append("Nessuna abitudine impostata.")
     for p in S["per_abitudine"]:
@@ -235,9 +253,9 @@ def riepilogo_testo(stato, oggi, chiave=None):
         righe.append(f"Oggi ({oggi.day}): previste e fatte {fatte or 'nessuna'}; previste da fare {mancano or 'nessuna'}.")
         voto = M["score"].get(str(oggi.day))
         if voto is not None:
-            righe.append(f"Voto di oggi: {voto}/6")
+            righe.append(f"Voto di oggi: {voto}/{VOTO_MAX}")
     if S["media_voto"] is not None:
-        righe.append(f"Media '{stato.get('scoreLabel', 'voto')}': {S['media_voto']}/6; giorni perfetti: {S['giorni_perfetti']}")
+        righe.append(f"Media '{stato.get('scoreLabel', 'voto')}': {S['media_voto']}/{VOTO_MAX}; giorni perfetti: {S['giorni_perfetti']}")
     if M["goals"]:
         righe.append("Obiettivi: " + "; ".join(f"{g['text']} ({'raggiunto' if g.get('done') else 'aperto'})" for g in M["goals"]))
     return "\n".join(righe)

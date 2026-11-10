@@ -17,6 +17,7 @@ import json
 import re
 import time
 import uuid
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import requests
@@ -96,69 +97,69 @@ def oggi():
 # ---------------------------------------------------------------------
 CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap');
 
-:root { --ciano: #00d9ff; --ciano-scuro: #0a6b85; --testo: #d8f6ff; }
+:root {
+  --blu: #2563eb; --blu-scuro: #1e3a8a; --blu-chiaro: #dbeafe;
+  --testo: #0f172a; --testo-tenue: #475569; --bordo: #e2e8f0; --carta: #ffffff;
+}
 
 .stApp {
   background:
-    radial-gradient(circle at 50% 0%, rgba(0,217,255,0.16), transparent 55%),
-    linear-gradient(rgba(0,217,255,0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,217,255,0.045) 1px, transparent 1px),
-    #030b14;
-  background-size: 100% 100%, 32px 32px, 32px 32px, 100% 100%;
+    radial-gradient(1200px 500px at 50% -120px, #dbeafe 0%, rgba(219,234,254,0) 70%),
+    #f5f8fc;
   color: var(--testo);
 }
-.stApp, .stApp p, .stApp li, .stApp label, .stApp span, .stApp div {
-  font-family: 'Rajdhani', sans-serif;
+.stApp, .stApp p, .stApp li, .stApp label, .stApp span, .stApp div, .stApp button, .stApp input, .stApp textarea {
+  font-family: 'Figtree', system-ui, sans-serif;
 }
-.stApp p, .stApp li, .stApp label { color: var(--testo); font-size: 1.08rem; }
-.stApp h3, .stApp h4 { font-family: 'Orbitron', sans-serif; color: var(--ciano); letter-spacing: .1rem; }
+.stApp p, .stApp li, .stApp label { color: var(--testo); font-size: 1.02rem; }
+.stApp h1, .stApp h2, .stApp h3, .stApp h4 { font-family: 'Figtree', sans-serif; color: var(--blu-scuro); font-weight: 700; }
+.stApp a { color: var(--blu); }
 header[data-testid="stHeader"] { background: transparent; }
 footer { visibility: hidden; }
 
 /* --- Intestazione con il nucleo luminoso --- */
-.hud { text-align: center; margin: -1.5rem 0 0.8rem 0; }
-.nucleo-box { position: relative; width: 110px; height: 110px; margin: 0 auto 0.5rem auto; }
-.anello { position: absolute; border-radius: 50%; border: 2px solid var(--ciano); }
-.a1 { inset: 0; border-color: var(--ciano) transparent var(--ciano) transparent;
-      animation: gira 6s linear infinite; box-shadow: 0 0 18px rgba(0,217,255,.45); }
-.a2 { inset: 13px; border-style: dashed; opacity: .75; animation: gira 10s linear infinite reverse; }
-.a3 { inset: 26px; border-color: transparent var(--ciano) transparent var(--ciano);
-      animation: gira 3s linear infinite; }
-.cuore { position: absolute; inset: 40px; border-radius: 50%;
-         background: radial-gradient(circle, #ffffff 0%, #9ff3ff 30%, var(--ciano) 60%, transparent 75%);
-         animation: pulsa 2.4s ease-in-out infinite; }
+.hud { text-align: center; margin: -1.6rem 0 0.9rem 0; }
+.nucleo-box { position: relative; width: 96px; height: 96px; margin: 0 auto 0.55rem auto; }
+.anello { position: absolute; border-radius: 50%; border: 2px solid var(--blu); }
+.a1 { inset: 0; border-color: var(--blu) transparent #60a5fa transparent; animation: gira 7s linear infinite;
+      box-shadow: 0 6px 24px rgba(37,99,235,.18); }
+.a2 { inset: 12px; border-style: dashed; border-color: #93c5fd; animation: gira 12s linear infinite reverse; }
+.a3 { inset: 24px; border-color: transparent var(--blu) transparent #60a5fa; animation: gira 4s linear infinite; }
+.cuore { position: absolute; inset: 35px; border-radius: 50%;
+         background: radial-gradient(circle, #ffffff 0%, #bfdbfe 40%, var(--blu) 100%);
+         box-shadow: 0 0 18px rgba(37,99,235,.35); animation: pulsa 2.6s ease-in-out infinite; }
 @keyframes gira { to { transform: rotate(360deg); } }
-@keyframes pulsa { 0%,100% { transform: scale(.88); opacity: .85; } 50% { transform: scale(1.06); opacity: 1; } }
-.titolo { font-family: 'Orbitron', sans-serif; font-size: 2rem; letter-spacing: .35rem;
-          color: var(--ciano); text-shadow: 0 0 12px rgba(0,217,255,.8); }
-.sottotitolo { font-family: 'Orbitron', sans-serif; font-size: .72rem; letter-spacing: .2rem;
-               color: #7fdcf0; opacity: .85; text-transform: uppercase; }
-.punto { display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-         background: #31ff9a; box-shadow: 0 0 8px #31ff9a; margin-right: 6px;
-         animation: pulsa 1.6s infinite; }
+@keyframes pulsa { 0%,100% { transform: scale(.9); } 50% { transform: scale(1.05); } }
+.titolo { font-family: 'Figtree', sans-serif; font-weight: 800; font-size: 1.9rem; letter-spacing: .32rem;
+          color: var(--blu-scuro); }
+.sottotitolo { font-size: .78rem; letter-spacing: .14rem; color: var(--testo-tenue); text-transform: uppercase; font-weight: 600; }
+.punto { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #22c55e;
+         margin-right: 6px; vertical-align: 1px; box-shadow: 0 0 0 3px rgba(34,197,94,.18); }
 
 /* --- Messaggi --- */
 [data-testid="stChatMessage"] {
-  background: rgba(6, 28, 44, 0.72);
-  border: 1px solid rgba(0,217,255,0.28);
-  border-radius: 14px;
-  box-shadow: 0 0 14px rgba(0,217,255,0.08) inset;
-  backdrop-filter: blur(4px);
+  background: var(--carta);
+  border: 1px solid var(--bordo);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(15,23,42,.06);
 }
-[data-testid="stChatMessage"] a { color: #5fe7ff; }
-[data-testid="stChatInput"] textarea { color: var(--testo); font-family: 'Rajdhani', sans-serif; font-size: 1.05rem; }
-[data-testid="stChatInput"] > div { border: 1px solid var(--ciano-scuro); background: #071827; }
+[data-testid="stChatInput"] textarea { color: var(--testo); font-size: 1.02rem; }
+[data-testid="stChatInput"] > div { border: 1px solid #cbd5e1; background: var(--carta); border-radius: 14px; }
 
 /* --- Barra laterale --- */
-[data-testid="stSidebar"] { background: #051320; border-right: 1px solid rgba(0,217,255,0.25); }
-[data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
-  font-family: 'Orbitron', sans-serif; color: var(--ciano); letter-spacing: .12rem; font-size: 1rem; }
+[data-testid="stSidebar"] { background: var(--carta); border-right: 1px solid var(--bordo); }
+[data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 { color: var(--blu-scuro); font-size: 1.05rem; }
 
-.stButton button { border: 1px solid var(--ciano-scuro); color: var(--testo); background: #071827; }
-.stButton button:hover { border-color: var(--ciano); color: var(--ciano); }
-[data-testid="stExpander"] { border: 1px solid rgba(0,217,255,0.25); border-radius: 10px; background: rgba(6,28,44,.5); }
+/* --- Pulsanti, riquadri, scelta della sezione --- */
+.stButton button, .stFormSubmitButton button {
+  border: 1px solid #cbd5e1; color: var(--testo); background: var(--carta); border-radius: 12px; font-weight: 600;
+}
+.stButton button:hover, .stFormSubmitButton button:hover { border-color: var(--blu); color: var(--blu); background: #f8fbff; }
+[data-testid="stExpander"] { border: 1px solid var(--bordo); border-radius: 14px; background: var(--carta); }
+div[role="radiogroup"] { background: var(--carta); border: 1px solid var(--bordo); border-radius: 14px;
+                         padding: 6px 10px; box-shadow: 0 1px 3px rgba(15,23,42,.05); justify-content: center; }
 </style>
 """
 
@@ -252,6 +253,20 @@ def carica_dal_gist():
     return dati, True
 
 
+def leggi_dal_gist(nome_file):
+    """Rilegge un solo file dal Gist (serve per vedere le X messe dal habit tracker)."""
+    try:
+        r = requests.get(f"https://api.github.com/gists/{GIST_ID}", headers=_intestazioni_github(), timeout=15)
+        r.raise_for_status()
+        info = r.json().get("files", {}).get(nome_file) or {}
+        contenuto = info.get("content")
+        if info.get("truncated") and info.get("raw_url"):
+            contenuto = requests.get(info["raw_url"], headers=_intestazioni_github(), timeout=15).text
+        return json.loads(contenuto) if contenuto else None
+    except Exception:
+        return None
+
+
 def salva_nel_gist(nome_file, dati):
     if not st.session_state.get("memoria_ok"):
         return
@@ -277,8 +292,90 @@ def salva_cronologia():
 
 
 def salva_abitudini():
-    st.session_state.abitudini["version"] = 3
+    st.session_state.abitudini["jarvis"] = True
     salva_nel_gist(FILE_ABITUDINI, st.session_state.abitudini)
+
+
+# ---------------------------------------------------------------------
+#  Il tuo habit tracker "Le mie abitudini" (file habit_tracker.html)
+#  Il file è quello dell'artefatto, senza modifiche: Jarvis gli dà i dati
+#  dal Gist e gli fa salvare lì invece che su Claude.
+# ---------------------------------------------------------------------
+FILE_TRACKER = Path(__file__).parent / "habit_tracker.html"
+STATO_TRACKER = re.compile(r'(<script type="application/json" id="state">)(.*?)(</script>)', re.S)
+
+COLLEGAMENTO_TRACKER = r"""<script>
+(function () {
+  var GIST = __GIST__, TOKEN = __TOKEN__;
+  function salva(documento) {
+    var m = documento.match(/<script type="application\/json" id="state">([\s\S]*?)<\/script>/);
+    if (!m) return Promise.reject(new Error('stato non trovato'));
+    var stato = JSON.parse(m[1]);
+    stato.jarvis = true;
+    return fetch('https://api.github.com/gists/' + GIST, {
+      method: 'PATCH',
+      headers: { 'Authorization': 'Bearer ' + TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ files: { 'abitudini.json': { content: JSON.stringify(stato) } } })
+    }).then(function (r) { if (!r.ok) throw new Error('salvataggio non riuscito: ' + r.status); });
+  }
+  window.claude = { use: function (nome) {
+    if (nome !== 'artifact' || !GIST || !TOKEN) return Promise.reject(new Error('non disponibile'));
+    return Promise.resolve({ publish: salva });
+  } };
+})();
+</script>
+<style>[data-act="exp-open"]{display:none!important}</style>
+"""
+
+
+def html_tracker():
+    try:
+        return FILE_TRACKER.read_text(encoding="utf-8")
+    except Exception:
+        return None
+
+
+def stato_dal_tracker():
+    """I dati scritti dentro habit_tracker.html (quelli dell'artefatto al momento della copia)."""
+    html = html_tracker()
+    m = STATO_TRACKER.search(html or "")
+    if not m:
+        return None
+    try:
+        dati = json.loads(m.group(2))
+    except json.JSONDecodeError:
+        return None
+    return dati if ab.valido(dati) else None
+
+
+def scegli_abitudini(dal_gist):
+    """La prima volta usa i dati dell'artefatto; poi sempre quelli salvati da Jarvis. Restituisce (dati, da_salvare)."""
+    if isinstance(dal_gist, dict) and dal_gist.get("jarvis") and ab.valido(dal_gist):
+        return dal_gist, False
+    iniziali = stato_dal_tracker()
+    if iniziali:
+        iniziali["jarvis"] = True
+        return iniziali, True
+    return (dal_gist if ab.valido(dal_gist) else ab.vuoto()), False
+
+
+def ricarica_abitudini():
+    if not st.session_state.get("memoria_ok"):
+        return
+    dati = leggi_dal_gist(FILE_ABITUDINI)
+    if isinstance(dati, dict) and dati.get("jarvis") and ab.valido(dati):
+        st.session_state.abitudini = dati
+
+
+def prepara_tracker(html):
+    stato = json.dumps(st.session_state.abitudini, ensure_ascii=False).replace("<", "\\u003c")
+    html = STATO_TRACKER.sub(lambda m: m.group(1) + stato + m.group(3), html, count=1)
+    # salva dopo mezzo secondo invece di 1,6 secondi, così non si perde nulla cambiando sezione
+    html = html.replace("timer=setTimeout(flush,1600)}", "timer=setTimeout(flush,400)}", 1)
+    collegamento = (COLLEGAMENTO_TRACKER
+                    .replace("__GIST__", json.dumps(GIST_ID if st.session_state.get("memoria_ok") else ""))
+                    .replace("__TOKEN__", json.dumps(GITHUB_TOKEN if st.session_state.get("memoria_ok") else "")))
+    return html.replace('<script id="app">', collegamento + '<script id="app">', 1)
 
 
 def salva_studio():
@@ -422,7 +519,7 @@ def strumento_aulaweb(azione, corso="", file="", parte=1):
 
 
 def strumento_abitudini(azione, abitudine="", data="", voto=None, testo="", mese=""):
-    st.session_state.abit_ver = st.session_state.get("abit_ver", 0) + 1  # aggiorna le caselle a schermo
+    ricarica_abitudini()  # prende anche le X messe nel habit tracker
     stato = st.session_state.abitudini
     try:
         giorno = leggi_data(data)
@@ -535,7 +632,7 @@ def definizione_strumenti():
             }, "required": ["azione", "testo"]}}},
         {"type": "function", "function": {
             "name": "abitudini",
-            "description": "Habit tracker dell'utente. 'riepilogo' (mese AAAA-MM opzionale); 'segna'/'togli' una o più abitudini (separate da virgola) in una data; 'voto' 0-6 della giornata; 'buona_azione' con testo. data: AAAA-MM-GG, 'oggi' o 'ieri'.",
+            "description": "Habit tracker dell'utente. 'riepilogo' (mese AAAA-MM opzionale); 'segna'/'togli' una o più abitudini (separate da virgola) in una data; 'voto' 0-5 della giornata; 'buona_azione' con testo. data: AAAA-MM-GG, 'oggi' o 'ieri'.",
             "parameters": {"type": "object", "properties": {
                 "azione": {"type": "string", "enum": ["riepilogo", "segna", "togli", "voto", "buona_azione"]},
                 "abitudine": {"type": "string"},
@@ -760,9 +857,9 @@ def trascrivi(audio_bytes):
 MODELLO_VOCE_HTML = """
 <style>
   body { margin: 0; }
-  button { background: #071827; color: #9ff3ff; border: 1px solid #0a6b85; border-radius: 8px;
-           padding: 4px 12px; font-size: 14px; cursor: pointer; font-family: sans-serif; }
-  button:hover { border-color: #00d9ff; color: #00d9ff; }
+  button { background: #ffffff; color: #1e3a8a; border: 1px solid #cbd5e1; border-radius: 10px;
+           padding: 4px 12px; font-size: 14px; cursor: pointer; font-family: system-ui, sans-serif; }
+  button:hover { border-color: #2563eb; color: #2563eb; }
 </style>
 <button id="parla">🔊 Ascolta</button>
 <button id="zitto">⏹</button>
@@ -910,162 +1007,18 @@ def sezione_jarvis():
 
 
 # ---------------------------------------------------------------------
-#  Sezione 2: abitudini
+#  Sezione 2: abitudini (il tuo habit tracker)
 # ---------------------------------------------------------------------
-def cb_segno(giorno_iso, id_abitudine, chiave):
-    ab.imposta_segno(st.session_state.abitudini, datetime.date.fromisoformat(giorno_iso),
-                     id_abitudine, bool(st.session_state[chiave]))
-    salva_abitudini()
-
-
-def cb_voto(giorno_iso, chiave):
-    valore = st.session_state[chiave]
-    ab.imposta_voto(st.session_state.abitudini, datetime.date.fromisoformat(giorno_iso),
-                    None if valore == "–" else int(valore))
-    salva_abitudini()
-
-
-def cb_buona_azione(giorno_iso, chiave):
-    ab.imposta_buona_azione(st.session_state.abitudini, datetime.date.fromisoformat(giorno_iso), st.session_state[chiave])
-    salva_abitudini()
-
-
-def cb_giorni(chiave_mese, id_abitudine, chiave):
-    scelti = st.session_state[chiave] or list(ab.TUTTI)
-    for h in ab.mese(st.session_state.abitudini, chiave_mese)["habits"]:
-        if h["id"] == id_abitudine:
-            h["days"] = sorted(scelti)
-    salva_abitudini()
-
-
-def cb_obiettivo(chiave_mese, id_obiettivo, chiave):
-    for g in ab.mese(st.session_state.abitudini, chiave_mese)["goals"]:
-        if g["id"] == id_obiettivo:
-            g["done"] = bool(st.session_state[chiave])
-    salva_abitudini()
-
-
-def cb_mantra(chiave_mese, chiave):
-    ab.mese(st.session_state.abitudini, chiave_mese)["mantra"] = st.session_state[chiave].strip()[:90]
-    salva_abitudini()
-
-
 def sezione_abitudini():
-    stato = st.session_state.abitudini
-    v = st.session_state.get("abit_ver", 0)
-    giorno = st.date_input("Giorno", value=oggi(), max_value=oggi(), format="DD/MM/YYYY", key="abit_giorno")
-    chiave = ab.chiave_mese(giorno)
-    M = ab.mese(stato, chiave)
-    iso = giorno.isoformat()
-
-    if M["mantra"]:
-        st.caption(f"✨ Mantra: {M['mantra']}")
-    if not M["habits"]:
-        st.info("Nessuna abitudine ancora: aggiungile qui sotto in «Modifica abitudini», oppure importa i dati dal vecchio habit tracker.")
-
-    previste = [h for h in M["habits"] if ab.previsto(h, giorno)]
-    altre = [h for h in M["habits"] if not ab.previsto(h, giorno)]
-    fatte = sum(1 for h in previste if ab.segnato(M, h["id"], giorno.day))
-    if previste:
-        st.markdown(f"#### {fatte}/{len(previste)} abitudini" + (" · giornata perfetta! 🌟" if fatte == len(previste) else ""))
-        st.progress(fatte / len(previste))
-    for h in previste:
-        k = f"hab_{v}_{iso}_{h['id']}"
-        serie = ab.serie_attuale(stato, h["id"], oggi()) if giorno == oggi() else 0
-        etichetta = h["name"] + (f"  🔥 {serie} di fila" if serie > 1 else "")
-        st.checkbox(etichetta, value=ab.segnato(M, h["id"], giorno.day), key=k, on_change=cb_segno, args=(iso, h["id"], k))
-    if altre:
-        with st.expander(f"Non previste oggi ({len(altre)}) – segnale se le fai in più"):
-            for h in altre:
-                k = f"hab_{v}_{iso}_{h['id']}"
-                st.checkbox(f"{h['name']} (prevista: {ab.testo_giorni(h['days'])})", value=ab.segnato(M, h["id"], giorno.day),
-                            key=k, on_change=cb_segno, args=(iso, h["id"], k))
-
-    k_voto = f"voto_{v}_{iso}"
-    voto = M["score"].get(str(giorno.day))
-    opzioni = ["–", 0, 1, 2, 3, 4, 5, 6]
-    st.radio(stato.get("scoreLabel", "Voto alla giornata") + " (0–6)", opzioni, horizontal=True,
-             index=opzioni.index(voto) if voto in opzioni else 0, key=k_voto, on_change=cb_voto, args=(iso, k_voto))
-    k_buona = f"buona_{v}_{iso}"
-    st.text_input("Buona azione del giorno", value=M["good"].get(str(giorno.day), ""), max_chars=70,
-                  key=k_buona, on_change=cb_buona_azione, args=(iso, k_buona))
-
-    st.markdown("### Il mese")
-    mesi = sorted(set(stato["months"]) | {ab.chiave_mese(oggi())}, reverse=True)
-    mesi = [m for m in mesi if m <= ab.chiave_mese(oggi())]
-    scelto = st.selectbox("Mese", mesi, format_func=ab.nome_mese, key="abit_mese")
-    st.markdown(ab.griglia_html(stato, scelto, oggi()), unsafe_allow_html=True)
-    S = ab.statistiche(stato, scelto, oggi())
-    if S["fino_a"] and S["per_abitudine"]:
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Completamento", "–" if S["complessivo"] is None else f"{S['complessivo']}%")
-        c2.metric("Giornate perfette", S["giorni_perfetti"])
-        c3.metric("Media voto", "–" if S["media_voto"] is None else str(S["media_voto"]).replace(".", ","))
-        for p in S["per_abitudine"]:
-            percentuale = p["percentuale"] or 0
-            st.caption(f"{p['nome']} · {p['giorni']} — {p['fatti']}/{p['previsti']} giorni previsti, record {p['record']}"
-                       + (f", +{p['in_piu']} in più" if p["in_piu"] else ""))
-            st.progress(percentuale / 100)
-
-    with st.expander("✎ Modifica abitudini, giorni, obiettivi e mantra"):
-        attuale = ab.chiave_mese(oggi())
-        M_att = ab.mese(stato, attuale)
-        st.caption(f"Le modifiche valgono per {ab.nome_mese(attuale)} e per i mesi successivi.")
-        k_mantra = f"mantra_{v}_{attuale}"
-        st.text_input("Mantra del mese", value=M_att["mantra"], key=k_mantra, on_change=cb_mantra, args=(attuale, k_mantra))
-        for h in list(M_att["habits"]):
-            c_nome, c_giorni, c_via = st.columns([3, 5, 1])
-            c_nome.markdown(f"**{h['name']}**")
-            k_giorni = f"giorni_{v}_{attuale}_{h['id']}"
-            c_giorni.multiselect("Giorni", options=[1, 2, 3, 4, 5, 6, 0], default=sorted(h["days"], key=lambda g: (g == 0, g)),
-                                 format_func=lambda g: GIORNI_SETTIMANA[g], key=k_giorni, label_visibility="collapsed",
-                                 on_change=cb_giorni, args=(attuale, h["id"], k_giorni))
-            if c_via.button("🗑️", key=f"via_{h['id']}", help="Elimina questa abitudine (e le sue X di questo mese)"):
-                ab.togli_abitudine(stato, attuale, h["id"])
-                salva_abitudini()
-                st.rerun()
-        with st.form("nuova_abitudine", clear_on_submit=True):
-            nuova = st.text_input("Nuova abitudine")
-            if st.form_submit_button("Aggiungi abitudine") and nuova.strip():
-                ab.aggiungi_abitudine(stato, attuale, nuova)
-                salva_abitudini()
-                st.rerun()
-        st.markdown("**Obiettivi**")
-        for g in M_att["goals"]:
-            k_ob = f"ob_{v}_{attuale}_{g['id']}"
-            st.checkbox(g["text"], value=bool(g.get("done")), key=k_ob, on_change=cb_obiettivo, args=(attuale, g["id"], k_ob))
-        with st.form("nuovo_obiettivo", clear_on_submit=True):
-            obiettivo = st.text_input("Nuovo obiettivo")
-            if st.form_submit_button("Aggiungi obiettivo") and obiettivo.strip():
-                M_att["goals"].append({"id": "x" + uuid.uuid4().hex[:8], "text": obiettivo.strip()[:60], "done": False})
-                salva_abitudini()
-                st.rerun()
-
-    with st.expander("⇪ Importa dal vecchio habit tracker"):
-        st.caption("Incolla qui il testo copiato con il pulsante «Esporta per Jarvis» del tuo habit tracker (Passo 10 della guida).")
-        testo = st.text_area("Dati esportati", height=120, key="import_testo")
-        sostituisci = st.checkbox("Sostituisci i dati delle abitudini già presenti in Jarvis", key="import_ok")
-        if st.button("Importa"):
-            try:
-                dati = json.loads(testo)
-            except json.JSONDecodeError:
-                st.error("Il testo non è valido: copia tutto, dalla prima { all'ultima }.")
-                return
-            if not ab.valido(dati):
-                st.error("Questi dati non sembrano del habit tracker.")
-                return
-            gia_presenti = any(m.get("habits") for m in stato["months"].values())
-            if gia_presenti and not sostituisci:
-                st.warning("Jarvis ha già delle abitudini: spunta «Sostituisci» per confermare.")
-                return
-            for M_imp in dati["months"].values():
-                ab._normalizza(M_imp)
-            dati["version"] = 3
-            st.session_state.abitudini = dati
-            st.session_state.abit_ver = v + 1
-            salva_abitudini()
-            st.success(f"Importati {len(dati['months'])} mesi. ✅")
-            st.rerun()
+    html = html_tracker()
+    if not html:
+        st.error("Manca il file **habit_tracker.html** nel repository GitHub: caricalo come gli altri file.")
+        return
+    if not st.session_state.memoria_ok:
+        st.warning("La memoria permanente non è collegata (Passo 7): le modifiche al habit tracker non verranno salvate.")
+    ricarica_abitudini()
+    components.html(prepara_tracker(html), height=1250, scrolling=True)
+    st.caption("Quello che segni qui lo vede anche Jarvis, e puoi segnarlo anche a voce: «ho fatto allenamento».")
 
 
 # ---------------------------------------------------------------------
@@ -1170,9 +1123,12 @@ def main():
         dati, collegata = carica_dal_gist()
         st.session_state.memoria = dati[FILE_MEMORIA]
         st.session_state.cronologia = dati[FILE_CRONOLOGIA]
-        st.session_state.abitudini = dati[FILE_ABITUDINI]
+        abitudini, da_salvare = scegli_abitudini(dati[FILE_ABITUDINI])
+        st.session_state.abitudini = abitudini
         st.session_state.studio = dati[FILE_STUDIO]
         st.session_state.memoria_ok = collegata
+        if da_salvare and collegata:
+            salva_abitudini()
         st.session_state.ultimo_audio = None
         st.session_state.pronto = True
 
