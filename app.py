@@ -110,8 +110,12 @@ CSS = """
     #f5f8fc;
   color: var(--testo);
 }
-.stApp, .stApp p, .stApp li, .stApp label, .stApp span, .stApp div, .stApp button, .stApp input, .stApp textarea {
+.stApp, .stApp p, .stApp li, .stApp label, .stApp button, .stApp input, .stApp textarea {
   font-family: 'Figtree', system-ui, sans-serif;
+}
+/* le icone di Streamlit (frecce del menu e dei riquadri) devono tenere il loro carattere speciale */
+.stApp [data-testid="stIconMaterial"], [data-testid="stIconMaterial"] {
+  font-family: 'Material Symbols Rounded' !important;
 }
 .stApp p, .stApp li, .stApp label { color: var(--testo); font-size: 1.02rem; }
 .stApp h1, .stApp h2, .stApp h3, .stApp h4 { font-family: 'Figtree', sans-serif; color: var(--blu-scuro); font-weight: 700; }
