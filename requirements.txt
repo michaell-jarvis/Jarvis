@@ -1,0 +1,9 @@
+streamlit>=1.40
+openai>=1.40
+ddgs>=9.0
+requests
+beautifulsoup4
+tzdata
+pypdf
+python-pptx
+python-docx
